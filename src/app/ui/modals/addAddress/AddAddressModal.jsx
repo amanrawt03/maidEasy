@@ -10,7 +10,7 @@ import {
   PrimaryButton,
   CancelButton,
   ErrorBox,
-} from "./addressModal.styles";
+} from './AddressModal.styles'
 
 export const AddAddressModal = ({ onClose, userId, onAddressAdded }) => {
   const [formData, setFormData] = useState({

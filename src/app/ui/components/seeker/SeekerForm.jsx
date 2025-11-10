@@ -15,7 +15,7 @@ import {
   StatusText,
   EmptyText,
 } from "./seekerForm.styles";
-import { AddAddressModal } from "../../modals/AddAddressModal";
+import { AddAddressModal } from "@/app/ui/modals/addAddress/AddAddressModal";
 import socket from "@/app/api/config/socketClient";
 
 export const SeekerForm = ({ userId }) => {
