@@ -18,7 +18,7 @@ import {
 import { AddAddressModal } from "@/app/ui/modals/addAddress/AddAddressModal";
 import socket from "@/app/api/config/socketClient";
 
-export const SeekerForm = ({ userId }) => {
+export const SeekerForm = ({ phone, userId }) => {
   const [addressList, setAddressList] = useState([]);
   const [addAddressMode, setAddAddressMode] = useState(false);
   const [jobStatus, setJobStatus] = useState("");
@@ -120,6 +120,7 @@ export const SeekerForm = ({ userId }) => {
           seekerId: userId,
           jobType: formData.jobType,
           scheduledTime: formData.slot,
+          seekerPhone: phone,
           message: `New ${formData.jobType} job available!`,
           createdAt: new Date().toISOString(),
         };

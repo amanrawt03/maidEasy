@@ -105,9 +105,9 @@ export const updateJobStatus = async (request) => {
 
 export const getUpcomingJobs = async (req) => {
   try {
-    const { status, helperId } = await req.json();
+    const { helperId } = await req.json();
 
-    if (!status || !helperId) {
+    if (!helperId) {
       return new Response(
         JSON.stringify({ error: "All fields are required" }),
         { status: 400 }
@@ -117,8 +117,9 @@ export const getUpcomingJobs = async (req) => {
     const { data: jobs, error } = await supabase
       .from("job")
       .select()
-      .eq("job_status", status)
+      .in("job_status", ["accepted", "in_progress"])  // 👈 multiple match
       .eq("helper_id", helperId);
+
 
     if (error) {
       console.error("Database error:", error);

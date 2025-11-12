@@ -127,7 +127,6 @@ export const Helper = ({ uName, helperId }) => {
     const fetchUpcomingJobs = async () => {
       try {
         const payload = {
-          status: "accepted",
           helperId,
         };
         const res = await fetch("/api/endpoints/job/getUpcomingJobs", {

@@ -50,7 +50,7 @@ export const StartJobModal = ({ job, onClose, onStartJob }) => {
   const handleStartJob = () => {
     const otpCode = otp.join("");
     if (otpCode.length === 4) {
-      onStartJob(job.job_id, otpCode);
+      onStartJob(job.job_id, job.helper_id, otpCode);
       onClose();
     } else {
       alert("Please enter complete 4-digit OTP");

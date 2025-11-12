@@ -106,6 +106,32 @@ io.on("connection", (socket) => {
 
       if (response.ok) {
         console.log("Database updated successfully");
+
+        // Send OTP to seeker
+        try {
+          console.log(`Sending OTP to seeker ${jobData.seekerId}`);
+          const otpResponse = await fetch(
+            "http://localhost:3000/api/endpoints/job/sendOTP",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                seekerId: jobData.seekerId,
+                phone: jobData.seekerPhone,
+              }),
+            }
+          );
+
+          const otpData = await otpResponse.json();
+          if (otpResponse.ok) {
+            console.log("OTP sent successfully to seeker");
+          } else {
+            console.error("Failed to send OTP:", otpData);
+          }
+        } catch (otpError) {
+          console.error("Error sending OTP:", otpError);
+        }
+
         // Notify all clients that job was accepted
         io.emit("jobAccepted", {
           jobId,

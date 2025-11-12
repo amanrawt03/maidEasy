@@ -27,7 +27,7 @@ export const Main = ({ userId }) => {
   if (!userData) return <div>Loading...</div>;
 
   if (userData.role === "seeker") {
-    return <Seeker userId={userId} />;
+    return <Seeker phone={userData.contact_number} userId={userId} />;
   }
 
   if (userData.role === "helper") {
