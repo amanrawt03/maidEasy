@@ -10,10 +10,12 @@ import {
 } from "./Helper.styles";
 import { useEffect, useState } from "react";
 import { StartJobModal } from "../../modals/startJob/StartJobModal";
+import { PaymentModal } from "../../modals/payment/PaymentModal";
 import { formatTime } from "../../utils/utilityFunctions";
 
 export const UpcomingEvents = ({ upcomingJobs }) => {
   const [isStartJobModalOpen, setIsStartJobModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
 
   const handleProceedClick = (job) => {
@@ -70,34 +72,40 @@ export const UpcomingEvents = ({ upcomingJobs }) => {
     }
   };
 
-  const handleFinishJob = async (jobId, helperId) => {
+  const handleFinishJob = (job) => {
+    setSelectedJob(job);
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentReceived = async (jobId, amount) => {
     try {
       const response = await fetch("/api/endpoints/job/updateJobStatus", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           jobId: jobId,
-          helperId: helperId,
-          status: "completed",
+          helperId: selectedJob.helper_id,
+          status: "payment_received"
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        alert("Job completed successfully!");
+        alert(`Payment of ₹${amount} received successfully!`);
         window.location.reload(); // Simple refresh for now
       } else {
-        throw new Error(data.error || "Failed to complete job");
+        throw new Error(data.error || "Failed to update payment status");
       }
     } catch (error) {
-      console.error("Error completing job:", error);
-      alert("Failed to complete job. Please try again.");
+      console.error("Error updating payment status:", error);
+      alert("Failed to update payment status. Please try again.");
     }
   };
 
   const closeModal = () => {
     setIsStartJobModalOpen(false);
+    setIsPaymentModalOpen(false);
     setSelectedJob(null);
   };
 
@@ -130,10 +138,14 @@ export const UpcomingEvents = ({ upcomingJobs }) => {
                 if (job.job_status === "accepted") {
                   handleProceedClick(job);
                 } else if (job.job_status === "in_progress") {
-                  handleFinishJob(job.job_id, job.helper_id);
+                  handleFinishJob(job);
                 }
               }}
-              disabled={job.timeLeft <= 0 || job.job_status === "completed"}
+              disabled={
+                job.timeLeft <= 0 ||
+                job.job_status === "completed" ||
+                job.job_status === "payment_received"
+              }
             >
               {job.timeLeft <= 0
                 ? "Expired"
@@ -141,7 +153,9 @@ export const UpcomingEvents = ({ upcomingJobs }) => {
                 ? "Proceed"
                 : job.job_status === "in_progress"
                 ? "Finish Job"
-                : "Completed"}
+                : job.job_status === "completed"
+                ? "Collect Payment"
+                : "Payment Received"}
             </ProceedButton>
           </JobDetails>
         </UpcomingJobCard>
@@ -152,6 +166,14 @@ export const UpcomingEvents = ({ upcomingJobs }) => {
           job={selectedJob}
           onClose={closeModal}
           onStartJob={handleStartJob}
+        />
+      )}
+
+      {isPaymentModalOpen && selectedJob && (
+        <PaymentModal
+          job={selectedJob}
+          onClose={closeModal}
+          onPaymentReceived={handlePaymentReceived}
         />
       )}
     </>
